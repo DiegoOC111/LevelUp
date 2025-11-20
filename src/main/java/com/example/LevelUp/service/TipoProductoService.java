@@ -25,10 +25,16 @@ public class TipoProductoService {
     }
 
     public TipoProducto save(TipoProducto tipoProducto) {
+        if (tipoProducto.getNombre() == null || tipoProducto.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del tipo de producto no puede estar vacío");
+        }
         return tipoProductoRepository.save(tipoProducto);
     }
 
     public TipoProducto update(Integer id, TipoProducto data) {
+        if (data.getNombre() == null || data.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del tipo de producto no puede estar vacío");
+        }
         return tipoProductoRepository.findById(id).map(tp -> {
             tp.setNombre(data.getNombre());
             return tipoProductoRepository.save(tp);
