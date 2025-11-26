@@ -188,7 +188,7 @@ public class BoletaController {
                             }
                     )
             )
-            Boleta boletaDetails
+            BoletaPOST boletaDetails
     ) {
         Boleta updated = boletaService.update(id, boletaDetails);
         if (updated == null) return ResponseEntity.notFound().build();
