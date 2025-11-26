@@ -1,9 +1,11 @@
 package com.example.LevelUp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Tipo_Producto", schema = "LevelUpDB")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TipoProducto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

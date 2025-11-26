@@ -2,14 +2,24 @@ package com.example.LevelUp.service;
 
 import com.example.LevelUp.model.Usuario;
 import com.example.LevelUp.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
+    private PasswordEncoder encoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
 
+    private JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
     public UsuarioService(UsuarioRepository usuarioRepository) {
@@ -26,63 +36,79 @@ public class UsuarioService {
 
 
     //Metodo create
-    public Usuario save(Usuario usuario) {
-        if (usuario.getCorreo() == null || usuario.getCorreo().trim().isEmpty() ||
-            usuario.getContrasena() == null || usuario.getContrasena().isEmpty()){
-            throw new IllegalArgumentException("debe ingresar un correo y contraseña");
-        }
+    public Usuario save(String correo, String contrasena, String rol) {
+        validateUsuarioFields(correo, contrasena, rol);
+        checkCorreoAvailable(correo);
 
-        List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
-        boolean correoExistente = todosLosUsuarios.stream().anyMatch(u -> u.getCorreo().equals(usuario.getCorreo()));
+        Usuario user = new Usuario();
+        user.setCorreo(correo);
+        user.setContrasena(encoder.encode(contrasena));
+        user.setRol(rol.toUpperCase());
 
-        if (correoExistente) {
-            throw new IllegalStateException("ya existe el usuario" + usuario.getCorreo());
-        }
-
-        if (!isValidEmail(usuario.getCorreo())) {
-            throw new IllegalArgumentException("formato de correo incorrecto");
-        }
-
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.save(user);
     }
 
     private boolean isValidEmail(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
     }
 
-    //Metodo update
-    public Usuario update(Integer id, Usuario data) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido");
+    public Usuario update(String correo, String nuevaContrasena, String nuevoRol) {
+        Usuario existing = getByCorreo(correo);
+
+        if (nuevaContrasena != null && !nuevaContrasena.trim().isEmpty()) {
+            existing.setContrasena(encoder.encode(nuevaContrasena));
         }
-        return usuarioRepository.findById(id).map(usuarioExistente -> {
 
-            if (data.getCorreo() == null || data.getCorreo().trim().isEmpty()) {
-                throw new IllegalArgumentException("El correo no puede estar vacío");
+        if (nuevoRol != null && !nuevoRol.trim().isEmpty()) {
+            String r = nuevoRol.toUpperCase();
+            if (!r.equals("USER") && !r.equals("ADMIN")) {
+                throw new IllegalArgumentException("Rol inválido. Debe ser USER o ADMIN");
             }
-            if (!usuarioExistente.getCorreo().equals(data.getCorreo())) {
-                List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+            existing.setRol(r);
+        }
 
-                boolean correoYaEnUso = todosLosUsuarios.stream()
-                        .anyMatch(u -> u.getCorreo().equalsIgnoreCase(data.getCorreo()) &&
-                                u.getId() != id);
+        return usuarioRepository.save(existing);
+    }
+    public Usuario getByCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo);
+    }
+    private void validateUsuarioFields(String correo, String contrasena, String rol) {
+        if (correo == null || correo.trim().isEmpty())
+            throw new IllegalArgumentException("El correo es obligatorio.");
 
-                if (correoYaEnUso) {
-                    throw new IllegalStateException("El nuevo correo ya está en uso por otro usuario.");
-                }
-            }
-            if (!isValidEmail(data.getCorreo())) {
-                throw new IllegalArgumentException("El formato del correo electrónico es inválido.");
-            }
-            usuarioExistente.setCorreo(data.getCorreo());
-            usuarioExistente.setContrasena(data.getContrasena());
-            usuarioExistente.setRol(data.getRol());
+        if (contrasena == null || contrasena.trim().isEmpty())
+            throw new IllegalArgumentException("La contraseña es obligatoria.");
 
-            return usuarioRepository.save(usuarioExistente);
-        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+        if (rol == null || rol.trim().isEmpty())
+            throw new IllegalArgumentException("El rol es obligatorio.");
+
+        String normalizedRole = rol.toUpperCase();
+        if (!normalizedRole.equals("USER") && !normalizedRole.equals("ADMIN"))
+            throw new IllegalArgumentException("El rol debe ser 'USER' o 'ADMIN'.");
     }
 
-    //metodo delete
+    private void checkCorreoAvailable(String correo) {
+        if (usuarioRepository.findByCorreo(correo) != null) {
+            throw new IllegalArgumentException("El usuario ya existe.");
+        }
+    }
+    public String login(String correo, String password) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(correo, password)
+            );
+            // Si pasa, generamos JWT
+            return jwtService.generateToken(correo);
+        } catch (Exception e) {
+            return null; // credenciales incorrectas
+        }
+    }
+
+    public String getRol(String correo) {
+        Usuario user = usuarioRepository.findByCorreo(correo);
+        if (user == null) return null;
+        return user.getRol();
+    }
     public void delete(Integer id) {
 
         if (id == null || id <= 0) {
