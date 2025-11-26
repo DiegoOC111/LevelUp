@@ -1,5 +1,6 @@
 package com.example.LevelUp.controller.Privates;
 
+import com.example.LevelUp.controller.DTO.BoletaPOST;
 import com.example.LevelUp.model.Boleta;
 import com.example.LevelUp.service.BoletaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,7 +121,7 @@ public class BoletaController {
                     required = true,
                     description = "Datos de la boleta",
                     content = @Content(
-                            schema = @Schema(implementation = Boleta.class),
+                            schema = @Schema(implementation = BoletaPOST.class),
                             examples = {
                                     @ExampleObject(
                                             name = "Crear boleta",
@@ -134,7 +135,7 @@ public class BoletaController {
                             }
                     )
             )
-            Boleta boleta
+            BoletaPOST boleta
     ) {
         return boletaService.save(boleta);
     }
@@ -187,7 +188,7 @@ public class BoletaController {
                             }
                     )
             )
-            Boleta boletaDetails
+            BoletaPOST boletaDetails
     ) {
         Boleta updated = boletaService.update(id, boletaDetails);
         if (updated == null) return ResponseEntity.notFound().build();
