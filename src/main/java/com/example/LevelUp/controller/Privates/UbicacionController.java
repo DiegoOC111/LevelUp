@@ -1,5 +1,6 @@
 package com.example.LevelUp.controller.Privates;
 
+import com.example.LevelUp.controller.DTO.UbicacionPOST;
 import com.example.LevelUp.model.Ubicacion;
 import com.example.LevelUp.service.UbicacionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -132,7 +133,7 @@ public class UbicacionController {
                             }
                     )
             )
-            Ubicacion ubicacion
+            UbicacionPOST ubicacion
     ) {
         return ubicacionService.save(ubicacion);
     }
@@ -184,7 +185,7 @@ public class UbicacionController {
                             }
                     )
             )
-            Ubicacion data
+            UbicacionPOST data
     ) {
         Ubicacion updated = ubicacionService.update(id, data);
         if (updated == null) return ResponseEntity.notFound().build();
