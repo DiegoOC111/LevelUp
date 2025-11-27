@@ -1,5 +1,6 @@
 package com.example.LevelUp.controller.Privates;
 
+import com.example.LevelUp.controller.DTO.PostPROD;
 import com.example.LevelUp.model.Producto;
 import com.example.LevelUp.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -144,7 +145,7 @@ public class ProductoController {
                             }
                     )
             )
-            Producto producto
+            PostPROD producto
     ) {
         return productoService.save(producto);
     }
@@ -190,15 +191,20 @@ public class ProductoController {
                                             value = """
                                                     {
                                                       "nombre": "Teclado Mecánico RGB",
-                                                      "precio": 54990,
-                                                      "stock": 20
+                                                        "descripcion": "Teclado mecánico con luces RGB",
+                                                        "imagenUrl": "https://img.com/teclado.png",
+                                                        "precioBruto": 46000,
+                                                        "precioTotal": 54990,
+                                                        "valorImpuestos": 8990,
+                                                        "stock": 20,
+                                                        "id_tipo": 1
                                                     }
                                                     """
                                     )
                             }
                     )
             )
-            Producto data
+            PostPROD data
     ) {
         Producto updated = productoService.update(id, data);
         if (updated == null) return ResponseEntity.notFound().build();

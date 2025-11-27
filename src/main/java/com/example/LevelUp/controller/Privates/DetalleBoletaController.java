@@ -1,5 +1,6 @@
 package com.example.LevelUp.controller.Privates;
 
+import com.example.LevelUp.controller.DTO.DetalleBoletaPOST;
 import com.example.LevelUp.model.DetalleBoleta;
 import com.example.LevelUp.service.DetalleBoletaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -129,7 +130,7 @@ public class DetalleBoletaController {
                             }
                     )
             )
-            DetalleBoleta detalleBoleta
+            DetalleBoletaPOST detalleBoleta
     ) {
         return detalleBoletaService.save(detalleBoleta);
     }
@@ -182,7 +183,7 @@ public class DetalleBoletaController {
                             }
                     )
             )
-            DetalleBoleta detalles
+            DetalleBoletaPOST detalles
     ) {
         DetalleBoleta updated = detalleBoletaService.update(id, detalles);
         if (updated == null) return ResponseEntity.notFound().build();
