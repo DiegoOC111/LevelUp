@@ -7,13 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
+    @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -39,7 +40,6 @@ public class UsuarioService {
     public Usuario save(String correo, String contrasena, String rol) {
         validateUsuarioFields(correo, contrasena, rol);
         checkCorreoAvailable(correo);
-
         Usuario user = new Usuario();
         user.setCorreo(correo);
         user.setContrasena(encoder.encode(contrasena));
