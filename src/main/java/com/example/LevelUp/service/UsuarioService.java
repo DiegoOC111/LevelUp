@@ -23,8 +23,10 @@ public class UsuarioService {
     private JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
+
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
+
     }
 
     public List<Usuario> findAll() {
@@ -92,13 +94,14 @@ public class UsuarioService {
             throw new IllegalArgumentException("El usuario ya existe.");
         }
     }
-    public String login(String correo, String password) {
+    public String login(Usuario user,String pass) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(correo, password)
+                    new UsernamePasswordAuthenticationToken(user.getCorreo(), pass)
             );
             // Si pasa, generamos JWT
-            return jwtService.generateToken(correo);
+
+            return jwtService.generateToken(user);
         } catch (Exception e) {
             return null; // credenciales incorrectas
         }

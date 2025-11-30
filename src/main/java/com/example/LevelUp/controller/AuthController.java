@@ -116,8 +116,8 @@ public class AuthController {
             )
             LoginRequest request
     ) {
-
-        String token = userService.login(request.getCorreo(), request.getPassword());
+        Usuario user = userRepository.findByCorreo(request.getCorreo());
+        String token = userService.login(user, request.getPassword());
 
         if (token == null) return new LoginResponse("error", null);
 

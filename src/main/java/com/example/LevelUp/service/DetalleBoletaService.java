@@ -37,23 +37,37 @@ public class DetalleBoletaService {
 
         Boleta p = boletaRepository.findById(detalleBoleta.idBoleta)
                 .orElseThrow(() -> new RuntimeException("la boleta no existe: " + detalleBoleta.idProducto));
+        p.setTotalBruto(p.getTotalBruto() + u.getPrecioBruto());
+        p.setTotalImpuestos((int) (p.getTotalBruto() * 0.19));
+        p.setTotal(p.getTotalImpuestos() + p.getTotalImpuestos());
         DetalleBoleta d = new DetalleBoleta();
         d.setIdBoleta(p);
         d.setIdProducto(u);
+        u.setStock(u.getStock() - 1);
+        productoRepository.save(u);
         return detalleBoletaRepository.save(d);
     }
 
     public DetalleBoleta update(Integer id, DetalleBoletaPOST detalleBoleta) {
         return detalleBoletaRepository.findById(id).map(det -> {
-            Producto u = productoRepository.findById(detalleBoleta.idProducto)
-                    .orElseThrow(() -> new RuntimeException("El usuario no existe: " + detalleBoleta.idBoleta));
+            // 1. Buscas las nuevas relaciones (Producto y Boleta)
+            Producto nuevoProducto = productoRepository.findById(detalleBoleta.idProducto)
+                    .orElseThrow(() -> new RuntimeException("El producto no existe"));
 
-            Boleta p = boletaRepository.findById(detalleBoleta.idBoleta)
-                    .orElseThrow(() -> new RuntimeException("la boleta no existe: " + detalleBoleta.idProducto));
-            DetalleBoleta d = new DetalleBoleta();
-            d.setIdBoleta(p);
-            d.setIdProducto(u);
+            Boleta nuevaBoleta = boletaRepository.findById(detalleBoleta.idBoleta)
+                    .orElseThrow(() -> new RuntimeException("La boleta no existe"));
+            Producto Old = det.getIdProducto();
+            Boleta OldBoleta = det.getIdBoleta();
+            OldBoleta.setTotalBruto(OldBoleta.getTotalBruto() + nuevoProducto.getPrecioBruto() - Old.getPrecioBruto());
+            OldBoleta.setTotalImpuestos((int) (OldBoleta.getTotalBruto() *0.19));
+            OldBoleta.setTotal(OldBoleta.getTotal() + OldBoleta.getTotalImpuestos());
+            det.setIdBoleta(OldBoleta);   // <-- Modificamos 'det', no creamos uno nuevo
+            det.setIdProducto(nuevoProducto);
+            nuevaBoleta.setTotalBruto(nuevaBoleta.getTotalBruto() );// <-- Modificamos 'det'
+            boletaRepository.save(OldBoleta);
+            // 3. Guardas 'det' que ahora ya tiene los datos cambiados
             return detalleBoletaRepository.save(det);
+
         }).orElse(null);
     }
 
