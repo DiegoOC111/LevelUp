@@ -58,20 +58,15 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Permite el origen de tu frontend React (http://localhost:3000)
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
 
-        // Permite los métodos que tu frontend usará (GET, POST, PUT, DELETE, etc.)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Permite que se envíen encabezados de autenticación (Authorization)
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 
-        // Permite credenciales (si planeas usar cookies o autenticación más compleja)
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica esta configuración a todas las rutas de la API ("/**")
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

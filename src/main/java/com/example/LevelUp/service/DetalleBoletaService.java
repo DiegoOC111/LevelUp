@@ -37,9 +37,7 @@ public class DetalleBoletaService {
 
         Boleta p = boletaRepository.findById(detalleBoleta.idBoleta)
                 .orElseThrow(() -> new RuntimeException("la boleta no existe: " + detalleBoleta.idProducto));
-        p.setTotalBruto(p.getTotalBruto() + u.getPrecioBruto());
-        p.setTotalImpuestos((int) (p.getTotalBruto() * 0.19));
-        p.setTotal(p.getTotalImpuestos() + p.getTotalImpuestos());
+
         DetalleBoleta d = new DetalleBoleta();
         d.setIdBoleta(p);
         d.setIdProducto(u);
