@@ -7,13 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
+    @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -22,8 +23,10 @@ public class UsuarioService {
     private JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
+
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
+
     }
 
     public List<Usuario> findAll() {
@@ -39,7 +42,6 @@ public class UsuarioService {
     public Usuario save(String correo, String contrasena, String rol) {
         validateUsuarioFields(correo, contrasena, rol);
         checkCorreoAvailable(correo);
-
         Usuario user = new Usuario();
         user.setCorreo(correo);
         user.setContrasena(encoder.encode(contrasena));
@@ -92,13 +94,14 @@ public class UsuarioService {
             throw new IllegalArgumentException("El usuario ya existe.");
         }
     }
-    public String login(String correo, String password) {
+    public String login(Usuario user,String pass) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(correo, password)
+                    new UsernamePasswordAuthenticationToken(user.getCorreo(), pass)
             );
             // Si pasa, generamos JWT
-            return jwtService.generateToken(correo);
+
+            return jwtService.generateToken(user);
         } catch (Exception e) {
             return null; // credenciales incorrectas
         }

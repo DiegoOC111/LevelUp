@@ -129,13 +129,15 @@ public class UsuarioController {
                     content = @Content)
     })
     @PostMapping("/create-user")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> createUser(@RequestBody RegisterRequest req) {
         try {
+            String rol = (req.getRole() == null || req.getRole().isBlank()) ? "USER" : req.getRole();
+
             Usuario u = usuarioService.save(
                     req.getCorreo(),
                     req.getPassword(),
-                    req.getRole()
+                    rol
             );
             return ResponseEntity.ok("Usuario creado: " + u.getCorreo());
         } catch (IllegalArgumentException e) {
