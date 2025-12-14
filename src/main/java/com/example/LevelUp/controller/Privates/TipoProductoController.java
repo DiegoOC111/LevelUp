@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tipos-producto")
+@RequestMapping("/tipos-productos")
 @Tag(
         name = "Tipos de Producto",
         description = "Gestión de tipos o categorías de productos. Acceso de lectura público y modificaciones restringidas a administradores."

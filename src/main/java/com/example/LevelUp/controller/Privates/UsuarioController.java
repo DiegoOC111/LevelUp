@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 @Tag(name = "Usuario", description = "Gestión de usuarios")
 public class UsuarioController {
 
@@ -121,8 +121,8 @@ public class UsuarioController {
     // ============================
     // DELETE
     // ============================
-    @Operation(summary = "Eliminar un usuario",
-            description = "Elimina un usuario del sistema utilizando su ID.")
+    @Operation(summary = "Agrega un usuario",
+            description = "Agrega un usuario nuevo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
             @ApiResponse(responseCode = "400", description = "ID inválido o usuario no encontrado",

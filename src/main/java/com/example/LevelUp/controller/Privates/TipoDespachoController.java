@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tipos-despacho")
+@RequestMapping("/tipos-despachos")
 @Tag(
         name = "Tipos de Despacho",
         description = "Gestión de tipos de despacho o métodos de envío. Lectura pública y modificaciones restringidas a administradores."
